@@ -25,6 +25,11 @@ def get_iface(device, remote, view, prefix):
     return driver, *iface
 
 
+def look_at(iface, position):
+
+    iface.lookAtFixationPoint(from_array(position))
+
+
 def to_numpy(yarp_vector):
 
     return numpy.array([yarp_vector[i] for i in range(yarp_vector.size())])
@@ -48,11 +53,11 @@ def main():
     freq = 100.0
     period = 1.0 / freq
 
-    head_driver, head_mode, head_pos_dir = get_iface('remote_controlboard', robot_name + '/head', ['IControlMode', 'IPositionDirect'], prefix)
-    torso_driver, torso_enc = get_iface('remote_controlboard', robot_name + '/torso', ['IEncoders'], prefix)
+    des_gaze = [-0.4, 0.0, 0.2]
 
-    for i in range(3):
-        head_mode.setControlMode(i, yarp.VOCAB_CM_POSITION_DIRECT)
+    gaze_driver, gaze = get_iface('gazecontrollerclient', 'iKinGazeCtrl', ['IGazeControl'], prefix)
+    head_driver, head_mode, head_pos, head_pos_dir = get_iface('remote_controlboard', robot_name + '/head', ['IControlMode', 'IPositionControl', 'IPositionDirect'], prefix)
+    torso_driver, torso_enc, torso_pos = get_iface('remote_controlboard', robot_name + '/torso', ['IEncoders', 'IPositionControl'], prefix)
 
     # load model
     with open('model.pkl', 'rb') as f:
@@ -62,6 +67,21 @@ def main():
     d = numpy.load('data.npy')
     x = d[:, 0:3]
     scaler = StandardScaler().fit(x)
+
+    # safe initialization
+    head_zero = from_array([0.0] * 6)
+    head_pos.positionMove(head_zero.data())
+
+    torso_zero = from_array([0.0] * 3)
+    torso_pos.positionMove(torso_zero.data())
+
+    look_at(gaze, des_gaze)
+
+    time.sleep(3.0)
+
+    # swith to position direct mode
+    for i in range(3):
+        head_mode.setControlMode(i, yarp.VOCAB_CM_POSITION_DIRECT)
 
     # loop
     while True:
