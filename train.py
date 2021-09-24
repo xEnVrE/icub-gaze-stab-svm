@@ -43,7 +43,7 @@ def main():
     x = scaler.transform(x)
 
     # support vector machine for regression
-    svr = MultiOutputRegressor(SVR(C=0.3, epsilon=0.2))
+    svr = MultiOutputRegressor(SVR(C = 1.0, epsilon = 0.2))
     svr.fit(x, y)
 
     # test with independent torso pitch or yaw sweeps
