@@ -47,8 +47,8 @@ def main():
     robot_name = 'icubSim'
     prefix = 'gazestab'
 
-    torso_yaw_range = numpy.linspace(-10.0, 10.0, 40)
-    torso_pitch_range = numpy.linspace(0.0, 10.0, 20)
+    torso_yaw_range = numpy.linspace(-20.0, 20.0, 80)
+    torso_pitch_range = numpy.linspace(-5.0, 20.0, 50)
     des_gaze = [-0.4, 0.0, 0.2]
 
     gaze_driver, gaze = get_iface('gazecontrollerclient', 'iKinGazeCtrl', ['IGazeControl'], prefix)
