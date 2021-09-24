@@ -48,7 +48,7 @@ def main():
     freq = 100.0
     period = 1.0 / freq
 
-    head_driver, head_mode, head_pos = get_iface('remote_controlboard', robot_name + '/head', ['IControlMode', 'IPositionDirect'], prefix)
+    head_driver, head_mode, head_pos_dir = get_iface('remote_controlboard', robot_name + '/head', ['IControlMode', 'IPositionDirect'], prefix)
     torso_driver, torso_enc = get_iface('remote_controlboard', robot_name + '/torso', ['IEncoders'], prefix)
 
     for i in range(3):
@@ -81,7 +81,7 @@ def main():
         des_head = numpy.zeros(6)
         des_head[0:3] = des_neck
         joints = from_array(des_head)
-        head_pos.setPositions(joints.data())
+        head_pos_dir.setPositions(joints.data())
 
         time.sleep(period)
 
